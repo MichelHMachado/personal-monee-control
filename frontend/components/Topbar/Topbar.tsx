@@ -1,19 +1,20 @@
 "use client";
 import React from "react";
-import { Typography, Box, AppBar, Toolbar } from "@mui/material";
+import { Typography, Box, AppBar, Toolbar, useTheme } from "@mui/material";
 import useAuth from "@/hooks/useAuth";
 import Image from "next/image";
 import LogoutButton from "../Auth/LogoutButton";
 import Link from "next/link";
 
 const TopBar = () => {
+  const theme = useTheme();
   const { userData } = useAuth();
 
   return (
     <AppBar
       position="sticky"
       sx={{
-        backgroundColor: "#003366",
+        backgroundColor: theme.palette.primary.main,
         padding: "10px 0",
         borderBottomRightRadius: "18px",
         borderBottomLeftRadius: "18px",
@@ -33,7 +34,12 @@ const TopBar = () => {
             className="flex items-center rounded-2xl overflow-hidden"
           >
             <Image
-              style={{ width: "auto", height: "auto" }}
+              style={{
+                width: "auto",
+                height: "auto",
+                maxHeight: "80px",
+                maxWidth: "80px",
+              }}
               alt="Logo"
               width={80}
               height={80}

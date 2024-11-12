@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { Box } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import TopBar from "@/components/Topbar/Topbar";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { Inter } from "next/font/google";
+import theme from "@/theme/MaterialUITheme";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,13 +25,15 @@ export default function RootLayout({
         className={`${inter.className} h-screen antialiased px-6 overflow-hidden`}
       >
         <AppRouterCacheProvider>
-          <Box sx={{ height: "100%", display: "flex", gap: "32px" }}>
-            <Sidebar />
-            <Box sx={{ flexGrow: 1 }}>
-              <TopBar />
-              {children}
+          <ThemeProvider theme={theme}>
+            <Box sx={{ height: "100%", display: "flex", gap: "32px" }}>
+              <Sidebar />
+              <Box sx={{ flexGrow: 1 }}>
+                <TopBar />
+                {children}
+              </Box>
             </Box>
-          </Box>
+          </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

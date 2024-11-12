@@ -21,6 +21,7 @@ import { getAllTransactions } from "@/lib/actions/transactions.actions";
 import { Transaction } from "@/types/transaction";
 import { formatDate } from "@/utils/formatDate";
 import { TransactionFormValues } from "@/lib/definitions";
+import CustomButton from "@/components/CustomButton/CustomButton";
 
 const Entries = () => {
   const theme = useTheme();
@@ -96,21 +97,8 @@ const Entries = () => {
         <Box>
           <Typography>Balance</Typography>
           <Box>BalanceComponent</Box>
-          <Button
-            variant="outlined"
-            sx={{
-              borderRadius: "12px",
-              backgroundColor: theme.palette.primary.main,
-              color: "white",
-              "&:hover": {
-                backgroundColor: theme.palette.primary.light,
-                boxShadow: theme.shadows[1],
-              },
-            }}
-            onClick={handleOpenModal}
-          >
-            Insert Entry
-          </Button>
+
+          <CustomButton onClick={handleOpenModal}>Insert Entry</CustomButton>
         </Box>
       </Grid>
       <Grid size={8}>

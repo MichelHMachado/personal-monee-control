@@ -8,6 +8,7 @@ declare module "@mui/material/styles" {
     };
     danger: {
       main: string;
+      light: string;
     };
   }
 
@@ -18,6 +19,7 @@ declare module "@mui/material/styles" {
     };
     danger?: {
       main?: string;
+      light: string;
     };
   }
 

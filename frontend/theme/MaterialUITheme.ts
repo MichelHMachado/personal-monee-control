@@ -9,6 +9,7 @@ const theme = createTheme({
     },
     danger: {
       main: "#FF5050",
+      light: "#E64545",
     },
     gradient: {
       primary: "linear-gradient(135deg, #d9e8f5, #a3c4f3)",

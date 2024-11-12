@@ -24,12 +24,11 @@ export default function FreeSoloCreateOption({
 }: Props) {
   return (
     <Autocomplete
-      value={value} // Value is now a string, not an object
+      value={value}
       onChange={(event, newValue) => {
         if (typeof newValue === "string") {
-          onChange(newValue); // Pass the string directly
+          onChange(newValue);
         } else if (newValue && newValue.inputValue) {
-          // Create a new value from the user input
           onChange(newValue.inputValue);
         } else {
           onChange(newValue ? newValue.name : null);
@@ -39,7 +38,7 @@ export default function FreeSoloCreateOption({
         const filtered = filter(options, params);
 
         const { inputValue } = params;
-        // Suggest the creation of a new value
+
         const isExisting = options.some((option) => inputValue === option.name);
         if (inputValue !== "" && !isExisting) {
           filtered.push({
@@ -55,15 +54,14 @@ export default function FreeSoloCreateOption({
       handleHomeEndKeys
       options={options}
       getOptionLabel={(option) => {
-        // Value selected with enter, right from the input
         if (typeof option === "string") {
           return option;
         }
-        // Add "xxx" option created dynamically
+
         if (option.inputValue) {
           return option.inputValue;
         }
-        // Regular option
+
         return option.name;
       }}
       renderOption={(props, option) => {
@@ -74,7 +72,6 @@ export default function FreeSoloCreateOption({
           </li>
         );
       }}
-      sx={{ width: 300 }}
       freeSolo
       renderInput={(params) => <TextField {...params} label={label} />}
     />

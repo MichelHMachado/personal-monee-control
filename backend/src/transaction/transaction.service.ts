@@ -103,7 +103,15 @@ export class TransactionService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  async remove(uuid: string): Promise<void> {
+    try {
+      const financialTransaction = await this.transactionModel.findByPk(uuid);
+      if (!financialTransaction) {
+        throw new Error('Transaction not found');
+      }
+      return await financialTransaction.destroy();
+    } catch (error) {
+      console.error('Error deleting transaction: ', error);
+    }
   }
 }

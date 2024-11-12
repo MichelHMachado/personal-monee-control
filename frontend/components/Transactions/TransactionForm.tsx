@@ -15,26 +15,28 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  Button,
+  Box,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AutocompleteCreatable from "@/components/AutoCompleteCreatable/AutocompleteCreatable";
 import {
   createTransaction,
+  deleteTransaction,
   editTransaction,
 } from "@/lib/actions/transactions.actions";
 import { getAllCategories } from "@/lib/actions/categories.actions";
+import CustomButton from "../CustomButton/CustomButton";
 
 interface Props {
   handleCloseModal: () => void;
-  onTransactionAdded: () => Promise<void>;
+  onTransactionsChanged: () => Promise<void>;
   initialData?: TransactionFormValues | undefined;
 }
 
 const TransactionForm = ({
   handleCloseModal,
-  onTransactionAdded,
+  onTransactionsChanged,
   initialData,
 }: Props) => {
   const [categoriesNames, setCategoriesNames] = useState<{ name: string }[]>(
@@ -76,12 +78,15 @@ const TransactionForm = ({
     }
   }, [initialData, reset]);
 
+  const handleFinishForm = () => {
+    handleFinishForm();
+  };
+
   const onSubmit = async (data: TransactionFormValues) => {
     const formData = new FormData();
     formData.append("type", data.type);
     formData.append("category", data.category);
     formData.append("amount", data.amount);
-
     const formattedDate = data.date
       ? dayjs(data.date).format("YYYY-MM-DDTHH:mm:ssZ")
       : "";
@@ -98,13 +103,22 @@ const TransactionForm = ({
       console.error(error);
     }
 
-    onTransactionAdded();
-    reset();
-    handleCloseModal();
+    handleFinishForm();
+  };
+
+  const handleDeleteTransaction = async (uuid: string) => {
+    try {
+      await deleteTransaction(uuid);
+      onTransactionsChanged();
+      reset();
+      handleCloseModal();
+    } catch (error) {
+      console.error("Failed to delete transaction:", error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <FormControl fullWidth margin="normal">
         <InputLabel>Type</InputLabel>
         <Select label="Type" {...register("type")} value={watch("type") || ""}>
@@ -167,9 +181,19 @@ const TransactionForm = ({
         />
       </LocalizationProvider>
 
-      <Button color="primary" type="submit" disabled={isSubmitting}>
-        {initialData ? "Update" : "Insert"}
-      </Button>
+      <Box sx={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+        <CustomButton type="submit" disabled={isSubmitting}>
+          {initialData ? "Update" : "Insert"}
+        </CustomButton>
+        {initialData && initialData.uuid && (
+          <CustomButton
+            isDanger={true}
+            onClick={() => handleDeleteTransaction(initialData.uuid!)}
+          >
+            Delete
+          </CustomButton>
+        )}
+      </Box>
     </form>
   );
 };

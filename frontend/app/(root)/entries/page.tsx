@@ -117,7 +117,7 @@ const Entries = () => {
             <DialogTitle>Insert Entry</DialogTitle>
             <DialogContent>
               <TransactionForm
-                onTransactionAdded={fetchTransactions}
+                onTransactionsChanged={fetchTransactions}
                 handleCloseModal={handleCloseModal}
                 initialData={editingTransaction || undefined}
               />

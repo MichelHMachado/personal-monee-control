@@ -82,3 +82,11 @@ export const editTransaction = async (formData: FormData) => {
     console.error("Error creating transaction: ", error);
   }
 };
+
+export const deleteTransaction = async (uuid: string) => {
+  try {
+    await api.delete(`/transaction/${uuid}`);
+  } catch (error) {
+    console.error("Failed to delete transaction: ", error);
+  }
+};

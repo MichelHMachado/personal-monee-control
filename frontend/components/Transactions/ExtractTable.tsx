@@ -15,19 +15,24 @@ import React, { useState } from "react";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Transaction } from "@/types/transaction";
 import { MoreHoriz as MoreHorizIcon } from "@mui/icons-material";
+import { TransactionFormValues } from "@/lib/definitions";
 
 interface Props {
   title: string;
   columns: { id: string; title: string }[];
   rows: Transaction[];
+  onEdit: (row: TransactionFormValues) => void;
 }
 
-const ExtractTable = ({ title, columns, rows }: Props) => {
+const ExtractTable = ({ title, columns, rows, onEdit }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filter, setFilter] = useState("");
 
-  const handleChangePage = (event, newPage: React.SetStateAction<number>) => {
+  const handleChangePage = (
+    _event: unknown,
+    newPage: React.SetStateAction<number>
+  ) => {
     setPage(newPage);
   };
 
@@ -77,7 +82,22 @@ const ExtractTable = ({ title, columns, rows }: Props) => {
         />
         <SearchOutlinedIcon />
       </Box>
-      <TableContainer sx={{ maxHeight: 700, overflow: "auto" }}>
+      <TableContainer
+        sx={{
+          maxHeight: 700,
+          pr: "4px",
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            backgroundColor: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            borderRadius: "4px",
+          },
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -103,7 +123,15 @@ const ExtractTable = ({ title, columns, rows }: Props) => {
                         }).format(row.amount)}
                       </TableCell>
                       <TableCell>
-                        <IconButton onClick={() => {}}>
+                        <IconButton
+                          onClick={() =>
+                            onEdit({
+                              ...row,
+                              category: row.category.name,
+                              amount: row.amount.toString(),
+                            })
+                          }
+                        >
                           <MoreHorizIcon />
                         </IconButton>
                       </TableCell>

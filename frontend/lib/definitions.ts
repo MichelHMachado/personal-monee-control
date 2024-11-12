@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { TypeOf, z } from "zod";
 
 export const SignUpSchema = z.object({
   name: z
@@ -27,6 +27,7 @@ export const LoginSchema = z.object({
 });
 
 export const TransactionSchema = z.object({
+  uuid: z.string().optional(),
   type: z.string().min(1, { message: "Type is required" }),
   category: z.string().min(1, { message: "Category is required" }),
   amount: z
@@ -37,6 +38,8 @@ export const TransactionSchema = z.object({
     message: "Date is invalid",
   }),
 });
+
+export type TransactionFormValues = TypeOf<typeof TransactionSchema>;
 
 export const CategorySchema = z.object({
   uuid: z.string().optional(),

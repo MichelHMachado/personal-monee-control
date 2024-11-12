@@ -3,14 +3,14 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Req,
+  Put,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { Transaction } from './entities/transaction.entity';
 
 @Controller('transaction')
 export class TransactionController {
@@ -46,12 +46,17 @@ export class TransactionController {
     return this.transactionService.findAllByUserUuid(uuid);
   }
 
-  @Patch(':uuid')
-  update(
+  @Put(':uuid')
+  async update(
     @Param('uuid') uuid: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
-  ) {
-    return this.transactionService.update(uuid, updateTransactionDto);
+    @Body() updateTransactionDto: CreateTransactionDto,
+    @Req() req: Request,
+  ): Promise<Transaction> {
+    const userUuid = req['user']?.uuid;
+    return this.transactionService.update(uuid, {
+      userUuid,
+      ...updateTransactionDto,
+    });
   }
 
   @Delete(':id')

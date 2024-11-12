@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { CategoryType, TransactionSchema } from "@/lib/definitions";
-import { TypeOf } from "zod";
+import {
+  CategoryType,
+  TransactionFormValues,
+  TransactionSchema,
+} from "@/lib/definitions";
+
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -16,17 +20,23 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AutocompleteCreatable from "@/components/AutoCompleteCreatable/AutocompleteCreatable";
-import { createTransaction } from "@/lib/actions/transactions.actions";
+import {
+  createTransaction,
+  editTransaction,
+} from "@/lib/actions/transactions.actions";
 import { getAllCategories } from "@/lib/actions/categories.actions";
-
-type FormValues = TypeOf<typeof TransactionSchema>;
 
 interface Props {
   handleCloseModal: () => void;
   onTransactionAdded: () => Promise<void>;
+  initialData?: TransactionFormValues | undefined;
 }
 
-const TransactionForm = ({ handleCloseModal, onTransactionAdded }: Props) => {
+const TransactionForm = ({
+  handleCloseModal,
+  onTransactionAdded,
+  initialData,
+}: Props) => {
   const [categoriesNames, setCategoriesNames] = useState<{ name: string }[]>(
     []
   );
@@ -60,7 +70,13 @@ const TransactionForm = ({ handleCloseModal, onTransactionAdded }: Props) => {
     defaultValues: { type: "", category: "", amount: "", date: "" },
   });
 
-  const onSubmit = async (data: FormValues) => {
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
+
+  const onSubmit = async (data: TransactionFormValues) => {
     const formData = new FormData();
     formData.append("type", data.type);
     formData.append("category", data.category);
@@ -72,7 +88,12 @@ const TransactionForm = ({ handleCloseModal, onTransactionAdded }: Props) => {
     formData.append("date", formattedDate);
 
     try {
-      await createTransaction(formData);
+      if (initialData && initialData.uuid) {
+        formData.append("uuid", initialData.uuid);
+        await editTransaction(formData);
+      } else {
+        await createTransaction(formData);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -147,7 +168,7 @@ const TransactionForm = ({ handleCloseModal, onTransactionAdded }: Props) => {
       </LocalizationProvider>
 
       <Button color="primary" type="submit" disabled={isSubmitting}>
-        Insert
+        {initialData ? "Update" : "Insert"}
       </Button>
     </form>
   );

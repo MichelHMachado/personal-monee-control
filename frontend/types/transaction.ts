@@ -3,4 +3,5 @@ export interface Transaction {
   category: { name: string };
   date: string;
   amount: number;
+  uuid?: string;
 }

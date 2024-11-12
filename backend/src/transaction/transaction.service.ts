@@ -69,11 +69,38 @@ export class TransactionService {
   }
 
   async update(uuid: string, updateTransactionDto: UpdateTransactionDto) {
-    await this.transactionModel.update(updateTransactionDto, {
-      where: { uuid },
-    });
-    const financialTransaction = await this.transactionModel.findByPk(uuid);
-    return financialTransaction;
+    const transaction = await this.sequelize.transaction();
+    const { userUuid, categoryName, ...transactionDto } = updateTransactionDto;
+    try {
+      let category = await this.categoryService.findByName(
+        categoryName,
+        transaction,
+      );
+
+      if (!category) {
+        category = await this.categoryService.create(
+          { userUuid, name: categoryName },
+          transaction,
+        );
+      }
+
+      await this.transactionModel.update(
+        { ...transactionDto, categoryUuid: category.uuid, userUuid },
+        {
+          where: { uuid },
+          transaction,
+        },
+      );
+      const financialTransaction = await this.transactionModel.findByPk(uuid);
+      await transaction.commit();
+      return financialTransaction;
+    } catch (error) {
+      await transaction.rollback();
+      throw new HttpException(
+        'Failed to update transaction: ' + (error as Error).message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   remove(id: number) {

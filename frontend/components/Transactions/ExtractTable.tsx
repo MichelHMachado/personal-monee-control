@@ -25,6 +25,7 @@ interface Props {
 const ExtractTable = ({ title, columns, rows }: Props) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [filter, setFilter] = useState("");
 
   const handleChangePage = (event, newPage: React.SetStateAction<number>) => {
     setPage(newPage);
@@ -36,6 +37,23 @@ const ExtractTable = ({ title, columns, rows }: Props) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  function getRowValue<T, K extends keyof T>(obj: T, key: K): T[K] {
+    return obj[key];
+  }
+
+  const filteredRows = filter
+    ? rows.filter((row) =>
+        columns.some((column) => {
+          const columnValue =
+            column.id === "category"
+              ? row.category.name
+              : String(getRowValue(row, column.id as keyof Transaction));
+
+          return columnValue.toLowerCase().includes(filter.toLowerCase());
+        })
+      )
+    : rows;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -49,11 +67,13 @@ const ExtractTable = ({ title, columns, rows }: Props) => {
               minHeight: "30px",
               "& input": {
                 padding: "0 14px",
-                color: "white",
+                color: "black",
               },
             },
           }}
           variant="outlined"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
         />
         <SearchOutlinedIcon />
       </Box>
@@ -67,8 +87,8 @@ const ExtractTable = ({ title, columns, rows }: Props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows &&
-              rows
+            {filteredRows &&
+              filteredRows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   return (
@@ -93,12 +113,12 @@ const ExtractTable = ({ title, columns, rows }: Props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      {rows && (
+      {filteredRows && (
         <TablePagination
           component={"div"}
           rowsPerPageOptions={[10, 25, 100]}
           rowsPerPage={rowsPerPage}
-          count={rows.length}
+          count={filteredRows.length}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}

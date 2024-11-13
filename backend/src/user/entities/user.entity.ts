@@ -43,6 +43,12 @@ export class User extends Model<User> {
   })
   password: string;
 
+  @AllowNull(true)
+  @Column({
+    type: DataType.DECIMAL(10, 2),
+  })
+  initial_balance: number;
+
   @HasMany(() => Transaction)
   transactions: Transaction[];
 

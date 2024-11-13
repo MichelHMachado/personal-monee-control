@@ -79,7 +79,9 @@ const TransactionForm = ({
   }, [initialData, reset]);
 
   const handleFinishForm = () => {
-    handleFinishForm();
+    onTransactionsChanged();
+    reset();
+    handleCloseModal();
   };
 
   const onSubmit = async (data: TransactionFormValues) => {
@@ -107,11 +109,14 @@ const TransactionForm = ({
   };
 
   const handleDeleteTransaction = async (uuid: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this transaction?"
+    );
+    if (!confirmed) return;
+
     try {
       await deleteTransaction(uuid);
-      onTransactionsChanged();
-      reset();
-      handleCloseModal();
+      handleFinishForm();
     } catch (error) {
       console.error("Failed to delete transaction:", error);
     }
